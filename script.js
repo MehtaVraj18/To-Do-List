@@ -7,7 +7,6 @@ const toggleCompletedBtn = document.getElementById('toggle-completed-btn');
 let tasks = loadTasks();
 let showCompleted = false;
 
-// Render tasks on page load
 renderTasks();
 
 addBtn.addEventListener('click', addTask);
@@ -53,34 +52,37 @@ function createTaskItem(text, completed, index) {
   li.setAttribute('draggable', !completed);
   li.dataset.index = index;
 
-  // Editable input field
   const inputField = document.createElement('input');
   inputField.type = 'text';
   inputField.value = text;
   inputField.readOnly = completed; // Completed tasks not editable
-  inputField.addEventListener('change', (e) => {
-    tasks[index].text = e.target.value.trim() || tasks[index].text;
-    saveTasks();
-    renderTasks();
-  });
 
-  // Toggle completion on click if not editing input
-  inputField.addEventListener('click', e => {
-    e.stopPropagation();
+  // Save edits on blur or Enter key
+  inputField.addEventListener('blur', () => {
+    if (!completed) {
+      updateTaskText(index, inputField.value);
+    }
+  });
+  inputField.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      inputField.blur();
+    }
   });
 
   li.appendChild(inputField);
 
-  // Toggle completed on item click (only for active tasks)
   if (!completed) {
-    li.addEventListener('click', () => {
-      tasks[index].completed = true;
-      saveTasks();
-      renderTasks();
+    // Mark task completed on click outside input field
+    li.addEventListener('click', e => {
+      if (e.target !== inputField) {
+        tasks[index].completed = true;
+        saveTasks();
+        renderTasks();
+      }
     });
   }
 
-  // Delete button
   const delBtn = document.createElement('button');
   delBtn.textContent = '×';
   delBtn.className = 'delete-btn';
@@ -93,7 +95,6 @@ function createTaskItem(text, completed, index) {
 
   li.appendChild(delBtn);
 
-  // Drag and drop handlers for active tasks only
   if (!completed) {
     li.addEventListener('dragstart', dragStart);
     li.addEventListener('dragover', dragOver);
@@ -102,6 +103,18 @@ function createTaskItem(text, completed, index) {
   }
 
   return li;
+}
+
+function updateTaskText(index, newText) {
+  newText = newText.trim();
+  if (newText.length === 0) {
+    // Delete if empty after edit
+    tasks.splice(index, 1);
+  } else {
+    tasks[index].text = newText;
+  }
+  saveTasks();
+  renderTasks();
 }
 
 function addTask() {
@@ -114,7 +127,7 @@ function addTask() {
   input.focus();
 }
 
-// Drag and drop variables
+// Drag and drop handlers
 let dragSrcEl = null;
 
 function dragStart(e) {
@@ -150,7 +163,6 @@ function drop(e) {
 
   if (srcIndex === tgtIndex) return;
 
-  // Reorder tasks array
   const movedTask = tasks.splice(srcIndex, 1)[0];
   tasks.splice(tgtIndex, 0, movedTask);
 
