@@ -14,7 +14,7 @@ body {
   padding: 20px 30px;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgb(0 0 0 / 0.1);
-  width: 320px;
+  width: 360px;
 }
 
 h1 {
@@ -49,25 +49,45 @@ h1 {
   background-color: #265dcc;
 }
 
-#task-list {
+.task-list {
   list-style: none;
   padding: 0;
-  margin-top: 20px;
+  margin-top: 10px;
+  min-height: 40px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fafafa;
 }
 
 .task-item {
   padding: 12px 10px;
-  background: #f9f9f9;
-  margin-bottom: 8px;
+  background: #fff;
+  margin-bottom: 6px;
   border-radius: 4px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  cursor: grab;
+  user-select: none;
+}
+
+.task-item.dragging {
+  opacity: 0.6;
 }
 
 .task-item.completed {
   text-decoration: line-through;
   color: #888;
+  background: #e0e0e0;
+  cursor: default;
+}
+
+.task-item input[type="text"] {
+  font-size: 16px;
+  border: none;
+  outline: none;
+  flex-grow: 1;
+  background: transparent;
 }
 
 .delete-btn {
@@ -78,4 +98,26 @@ h1 {
   cursor: pointer;
   font-size: 18px;
   line-height: 1;
+  margin-left: 10px;
+}
+
+#toggle-completed-btn {
+  margin-top: 15px;
+  width: 100%;
+  padding: 8px;
+  border: none;
+  background: #777;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  user-select: none;
+}
+
+#toggle-completed-btn:hover {
+  background: #555;
+}
+
+.completed-list.hidden {
+  display: none;
 }
